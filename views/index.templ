@@ -1,6 +1,8 @@
 package views
 
 import "github.com/mressex/go-todo/models"
+import "fmt"
+import "strconv"
 
 templ Home(todos []models.Todo) {
   <!doctype html>
@@ -25,7 +27,7 @@ templ Head() {
 templ TodoCreateForm() {
   <form action="/todo" method="POST" style="display: flex; flex-direction: column">
     <input type="text" name="title" placeholder="Enter a title">
-    <textarea name="description" placeholder="Enter a description"></textarea>
+    <textarea name="details" placeholder="Enter a description"></textarea>
     <button type="submit">Create</button>
   </form>
 }
@@ -33,7 +35,22 @@ templ TodoCreateForm() {
 templ TodoList(todos []models.Todo) {
   <ul>
     for _, todo := range todos {
-      <li>{todo.Title}</li>
+      <li style="display: flex; flex-direction: row; gap: 10px; align-items: center">
+        <h2>{todo.Title}</h2>
+        <p>{todo.Details}</p>
+
+        if todo.Completed {
+          <p>Completed</p>
+        } else {
+          <p>Not Completed</p>
+        }
+
+        <form
+          action={templ.URL(fmt.Sprintf("/todo/%s", strconv.Itoa(todo.ID)))}
+          method="POST">
+          <button type="submit">Complete</button>
+        </form>
+      </li>
     }
   </ul>
 }

@@ -32,7 +32,10 @@ func InitKeyStone() {
 
 	pClient = proto.NewKeystoneClient(ksGrpcConn)
 	keystoneConnection = keystone.NewConnection(pClient, vendorID, appID, accessToken)
+
 	keystoneConnection.RegisterTypes(models.Todo{})
+
+	keystoneConnection.SyncSchema().Wait()
 }
 
 func CloseKeyStone() error {

@@ -2,8 +2,13 @@
 </head><body><h1>Todo List</h1>
 </body></html>
 <meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Simple Todo</title>
-<form action=\"/todo\" method=\"POST\" style=\"display: flex; flex-direction: column\"><input type=\"text\" name=\"title\" placeholder=\"Enter a title\"> <textarea name=\"description\" placeholder=\"Enter a description\"></textarea> <button type=\"submit\">Create</button></form>
+<form action=\"/todo\" method=\"POST\" style=\"display: flex; flex-direction: column\"><input type=\"text\" name=\"title\" placeholder=\"Enter a title\"> <textarea name=\"details\" placeholder=\"Enter a description\"></textarea> <button type=\"submit\">Create</button></form>
 <ul>
-<li>
-</li>
+<li style=\"display: flex; flex-direction: row; gap: 10px; align-items: center\"><h2>
+</h2><p>
+</p>
+<p>Completed</p>
+<p>Not Completed</p>
+<form action=\"
+\" method=\"POST\"><button type=\"submit\">Complete</button></form></li>
 </ul>

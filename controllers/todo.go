@@ -6,24 +6,36 @@ import (
 )
 
 func GetAllTodos() ([]models.Todo, error) {
-	//todo := &models.Todo{}
+	//todos := &models.Todo{}
 	//actor := database.Actor()
+	//err := actor.Get(context.Background(), keystone.ByEntityID(todos, todos.GetKeystoneID()), todos, keystone.WithProperties())
 
-	//err := actor.Get(context.Background(), keystone.ByEntityID(todo), todo, keystone.WithProperties())
-
-	todos := []models.Todo{}
+	var todos []models.Todo
 	statement := "SELECT id, title, details, completed FROM todos;"
 	rows, err := database.DB.Query(statement)
 	if err != nil {
 		return todos, err
 	}
 
+	var (
+		id        int
+		title     string
+		details   string
+		completed bool
+	)
+
 	for rows.Next() {
-		todo := models.Todo{}
-		err = rows.Scan(&todo.Id, &todo.Title, &todo.Details, &todo.Completed)
+		err = rows.Scan(&id, &title, &details, &completed)
 		if err != nil {
 			return todos, err
 		}
+		todo := models.Todo{
+			ID:        id,
+			Title:     title,
+			Details:   details,
+			Completed: completed,
+		}
+
 		todos = append(todos, todo)
 	}
 
@@ -46,4 +58,38 @@ func MarkTodoComplete(id int) error {
 		return err
 	}
 	return nil
+}
+
+func MarkTodoIncomplete(id int) error {
+	statement := "UPDATE todos SET completed = ? WHERE id = ?;"
+	_, err := database.DB.Exec(statement, false, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetTodoByID(id int) (models.Todo, error) {
+	statement := "SELECT id, title, details, completed FROM todos WHERE id = ?;"
+	row := database.DB.QueryRow(statement, id)
+
+	var (
+		title     string
+		details   string
+		completed bool
+	)
+
+	err := row.Scan(&id, &title, &details, &completed)
+	if err != nil {
+		return models.Todo{}, err
+	}
+
+	todo := models.Todo{
+		ID:        id,
+		Title:     title,
+		Details:   details,
+		Completed: completed,
+	}
+
+	return todo, nil
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/mressex/go-todo/views"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func TodoRouter(r chi.Router) {
@@ -37,6 +38,36 @@ func TodoRouter(r chi.Router) {
 		if err != nil {
 			log.Println(err)
 			http.Error(w, "could not create todo", http.StatusInternalServerError)
+			return
+		}
+
+		log.Println("Redirecting to /")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	})
+
+	r.Post("/todo/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+		idInt, err := strconv.Atoi(id)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "could not convert id to int", http.StatusBadRequest)
+		}
+
+		todo, err := controllers.GetTodoByID(idInt)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "could not get todo by id", http.StatusInternalServerError)
+			return
+		}
+
+		if todo.Completed {
+			err = controllers.MarkTodoIncomplete(idInt)
+		} else {
+			err = controllers.MarkTodoComplete(idInt)
+		}
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "could not mark todo complete", http.StatusInternalServerError)
 			return
 		}
 
