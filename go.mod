@@ -7,6 +7,8 @@ require (
 	github.com/go-chi/chi/v5 v5.1.0
 )
 
+require github.com/mattn/go-sqlite3 v1.14.23 // indirect
+
 require (
 	github.com/kubex/keystone-go v0.0.0-20240906195435-7364d2da3788
 	github.com/packaged/environment v1.0.0 // indirect

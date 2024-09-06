@@ -9,12 +9,14 @@ import (
 )
 
 func main() {
+	//database.InitKeyStone()
+	//defer database.CloseKeyStone()
+
+	database.Setup()
+
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Group(routes.TodoRouter)
-
-	database.InitKeyStone()
-	defer database.CloseKeyStone()
 
 	http.ListenAndServe(":3030", r)
 }

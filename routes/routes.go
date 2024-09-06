@@ -23,7 +23,7 @@ func TodoRouter(r chi.Router) {
 		templ.Handler(views.Home(todos)).ServeHTTP(w, r)
 	})
 
-	r.Post("/", func(w http.ResponseWriter, r *http.Request) {
+	r.Post("/todo", func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
 			log.Println(err)
@@ -40,6 +40,7 @@ func TodoRouter(r chi.Router) {
 			return
 		}
 
+		log.Println("Redirecting to /")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
 

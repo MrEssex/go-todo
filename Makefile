@@ -15,3 +15,6 @@ server:
 # start the application in development
 dev:
 	@make -j5 templ server
+
+create-database:
+	@sqlite3 ./database.db < ./table.sql
