@@ -1,0 +1,9 @@
+<!doctype html><html lang=\"en\"><head>
+</head><body><h1>Todo List</h1>
+</body></html>
+<meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Simple Todo</title>
+<form action=\"/todo\" method=\"POST\" style=\"display: flex; flex-direction: column\"><input type=\"text\" name=\"title\" placeholder=\"Enter a title\"> <textarea name=\"description\" placeholder=\"Enter a description\"></textarea> <button type=\"submit\">Create</button></form>
+<ul>
+<li>
+</li>
+</ul>

@@ -1,0 +1,39 @@
+package views
+
+import "github.com/mressex/go-todo/models"
+
+templ Home(todos []models.Todo) {
+  <!doctype html>
+  <html lang="en">
+  <head>
+    @Head()
+  </head>
+  <body>
+    <h1>Todo List</h1>
+    @TodoList(todos)
+    @TodoCreateForm()
+  </body>
+  </html>
+}
+
+templ Head() {
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simple Todo</title>
+}
+
+templ TodoCreateForm() {
+  <form action="/todo" method="POST" style="display: flex; flex-direction: column">
+    <input type="text" name="title" placeholder="Enter a title">
+    <textarea name="description" placeholder="Enter a description"></textarea>
+    <button type="submit">Create</button>
+  </form>
+}
+
+templ TodoList(todos []models.Todo) {
+  <ul>
+    for _, todo := range todos {
+      <li>{todo.Title}</li>
+    }
+  </ul>
+}
