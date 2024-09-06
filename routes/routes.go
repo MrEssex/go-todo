@@ -75,4 +75,23 @@ func TodoRouter(r chi.Router) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
 
+	r.Post("/todo/{id}/delete", func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+		idInt, err := strconv.Atoi(id)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "could not convert id to int", http.StatusBadRequest)
+		}
+
+		err = controllers.DeleteTodoByID(idInt)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "could not delete todo by id", http.StatusInternalServerError)
+			return
+		}
+
+		log.Println("Redirecting to /")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	})
+
 }

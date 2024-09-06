@@ -93,3 +93,12 @@ func GetTodoByID(id int) (models.Todo, error) {
 
 	return todo, nil
 }
+
+func DeleteTodoByID(id int) error {
+	statement := "DELETE FROM todos WHERE id = ?;"
+	_, err := database.DB.Exec(statement, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

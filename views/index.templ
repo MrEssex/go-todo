@@ -50,6 +50,12 @@ templ TodoList(todos []models.Todo) {
           method="POST">
           <button type="submit">Complete</button>
         </form>
+
+        <form
+          action={templ.URL(fmt.Sprintf("/todo/%s/delete", strconv.Itoa(todo.ID)))}
+          method="POST">
+          <button type="submit">Delete</button>
+        </form>
       </li>
     }
   </ul>
