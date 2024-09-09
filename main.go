@@ -9,10 +9,8 @@ import (
 )
 
 func main() {
-	//database.InitKeyStone()
-	//defer database.CloseKeyStone()
-
-	database.Setup()
+	database.InitKeyStone()
+	defer database.CloseKeyStone()
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)

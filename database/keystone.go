@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	vendorID    = "todo"
+	vendorID    = "mressex"
 	appID       = "todo"
-	accessToken = "test-access-token"
+	accessToken = "e185b3pB0tQ3i7uetPPUA5WSXN-2YXVYuQG8qmELPI75wKCPU" //Obv use env but it's local :D
 )
 
 var keystoneConnection *keystone.Connection
@@ -23,7 +23,7 @@ var pClient proto.KeystoneClient
 func InitKeyStone() {
 	var err error
 
-	ksGrpcConn, err = grpc.NewClient("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()),
+	ksGrpcConn, err = grpc.NewClient("localhost:51051", grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithIdleTimeout(time.Minute*5), grpc.WithConnectParams(grpc.ConnectParams{MinConnectTimeout: time.Second * 5}))
 
 	if err != nil {
@@ -34,7 +34,6 @@ func InitKeyStone() {
 	keystoneConnection = keystone.NewConnection(pClient, vendorID, appID, accessToken)
 
 	keystoneConnection.RegisterTypes(models.Todo{})
-
 	keystoneConnection.SyncSchema().Wait()
 }
 
@@ -44,6 +43,10 @@ func CloseKeyStone() error {
 	}
 
 	return nil
+}
+
+func Conn() *keystone.Connection {
+	return keystoneConnection
 }
 
 func Actor() *keystone.Actor {

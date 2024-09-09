@@ -8,16 +8,13 @@ import (
 	"github.com/mressex/go-todo/views"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 func TodoRouter(r chi.Router) {
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-
 		todos, err := controllers.GetAllTodos()
 		if err != nil {
-			log.Println(err)
 			todos = []models.Todo{}
 		}
 
@@ -27,7 +24,6 @@ func TodoRouter(r chi.Router) {
 	r.Post("/todo", func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
-			log.Println(err)
 			http.Error(w, "could not parse form", http.StatusBadRequest)
 			return
 		}
@@ -36,7 +32,6 @@ func TodoRouter(r chi.Router) {
 		details := r.FormValue("details")
 		err = controllers.CreateTodo(title, details)
 		if err != nil {
-			log.Println(err)
 			http.Error(w, "could not create todo", http.StatusInternalServerError)
 			return
 		}
@@ -47,26 +42,19 @@ func TodoRouter(r chi.Router) {
 
 	r.Post("/todo/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "id")
-		idInt, err := strconv.Atoi(id)
+		todo, err := controllers.GetTodoByID(id)
 		if err != nil {
-			log.Println(err)
-			http.Error(w, "could not convert id to int", http.StatusBadRequest)
-		}
-
-		todo, err := controllers.GetTodoByID(idInt)
-		if err != nil {
-			log.Println(err)
 			http.Error(w, "could not get todo by id", http.StatusInternalServerError)
 			return
 		}
 
 		if todo.Completed {
-			err = controllers.MarkTodoIncomplete(idInt)
+			err = controllers.MarkTodoIncomplete(id)
 		} else {
-			err = controllers.MarkTodoComplete(idInt)
+			err = controllers.MarkTodoComplete(id)
 		}
+
 		if err != nil {
-			log.Println(err)
 			http.Error(w, "could not mark todo complete", http.StatusInternalServerError)
 			return
 		}
@@ -77,15 +65,8 @@ func TodoRouter(r chi.Router) {
 
 	r.Post("/todo/{id}/delete", func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "id")
-		idInt, err := strconv.Atoi(id)
+		err := controllers.DeleteTodoByID(id)
 		if err != nil {
-			log.Println(err)
-			http.Error(w, "could not convert id to int", http.StatusBadRequest)
-		}
-
-		err = controllers.DeleteTodoByID(idInt)
-		if err != nil {
-			log.Println(err)
 			http.Error(w, "could not delete todo by id", http.StatusInternalServerError)
 			return
 		}

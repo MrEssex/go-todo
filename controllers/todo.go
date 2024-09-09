@@ -1,104 +1,71 @@
 package controllers
 
 import (
+	"context"
+	"github.com/kubex/keystone-go/keystone"
+	"github.com/kubex/keystone-go/proto"
 	"github.com/mressex/go-todo/database"
 	"github.com/mressex/go-todo/models"
+	"log"
 )
 
 func GetAllTodos() ([]models.Todo, error) {
-	//todos := &models.Todo{}
-	//actor := database.Actor()
-	//err := actor.Get(context.Background(), keystone.ByEntityID(todos, todos.GetKeystoneID()), todos, keystone.WithProperties())
-
+	todo := &models.Todo{}
 	var todos []models.Todo
-	statement := "SELECT id, title, details, completed FROM todos;"
-	rows, err := database.DB.Query(statement)
+	actor := database.Actor()
+
+	results, err := actor.List(context.Background(), keystone.Type(todo), []string{"title", "details", "completed"}, keystone.Limit(100, 0))
 	if err != nil {
 		return todos, err
 	}
 
-	var (
-		id        int
-		title     string
-		details   string
-		completed bool
-	)
-
-	for rows.Next() {
-		err = rows.Scan(&id, &title, &details, &completed)
-		if err != nil {
-			return todos, err
-		}
-		todo := models.Todo{
-			ID:        id,
-			Title:     title,
-			Details:   details,
-			Completed: completed,
-		}
-
-		todos = append(todos, todo)
+	err = keystone.UnmarshalAppend(&todos, results...)
+	if err != nil {
+		return todos, err
 	}
 
 	return todos, nil
 }
 
 func CreateTodo(todo string, details string) error {
-	statement := "INSERT INTO todos (title, details, completed) VALUES (?, ?, ?);"
-	_, err := database.DB.Exec(statement, todo, details, false)
-	if err != nil {
-		return err
-	}
-	return nil
+	return database.Actor().Mutate(context.Background(), &models.Todo{Title: todo, Details: details, Completed: false}, "")
 }
 
-func MarkTodoComplete(id int) error {
-	statement := "UPDATE todos SET completed = ? WHERE id = ?;"
-	_, err := database.DB.Exec(statement, true, id)
-	if err != nil {
-		return err
-	}
-	return nil
+func MarkTodoComplete(id string) error {
+	todo := &models.Todo{Completed: true}
+	todo.SetKeystoneID(id)
+
+	return database.Actor().Mutate(context.Background(), todo, "Complete")
 }
 
-func MarkTodoIncomplete(id int) error {
-	statement := "UPDATE todos SET completed = ? WHERE id = ?;"
-	_, err := database.DB.Exec(statement, false, id)
-	if err != nil {
-		return err
-	}
-	return nil
+func MarkTodoIncomplete(id string) error {
+	x, err := database.Conn().Mutate(context.Background(), &proto.MutateRequest{
+		Authorization: database.Actor().Authorization(),
+		EntityId:      id,
+		Mutation: &proto.Mutation{
+			Properties: []*proto.EntityProperty{
+				{
+					Property:   "completed",
+					Value:      &proto.Value{Bool: false},
+					ClearEmpty: true,
+				},
+			},
+		}})
+	log.Println(x)
+	return err
 }
 
-func GetTodoByID(id int) (models.Todo, error) {
-	statement := "SELECT id, title, details, completed FROM todos WHERE id = ?;"
-	row := database.DB.QueryRow(statement, id)
-
-	var (
-		title     string
-		details   string
-		completed bool
-	)
-
-	err := row.Scan(&id, &title, &details, &completed)
-	if err != nil {
-		return models.Todo{}, err
-	}
-
-	todo := models.Todo{
-		ID:        id,
-		Title:     title,
-		Details:   details,
-		Completed: completed,
-	}
-
-	return todo, nil
+func GetTodoByID(id string) (models.Todo, error) {
+	todo := &models.Todo{}
+	err := database.Actor().GetByID(context.Background(), id, todo)
+	return *todo, err
 }
 
-func DeleteTodoByID(id int) error {
-	statement := "DELETE FROM todos WHERE id = ?;"
-	_, err := database.DB.Exec(statement, id)
-	if err != nil {
-		return err
-	}
-	return nil
+func DeleteTodoByID(id string) error {
+	x, err := database.Conn().Mutate(context.Background(), &proto.MutateRequest{
+		Authorization: database.Actor().Authorization(),
+		EntityId:      id,
+		Mutation:      &proto.Mutation{State: proto.EntityState_Archived}})
+	log.Println(x)
+	return err
 }
