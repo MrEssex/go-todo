@@ -1,8 +1,8 @@
 package database
 
 import (
-	"github.com/kubex/keystone-go/keystone"
-	"github.com/kubex/keystone-go/proto"
+	"github.com/keystonedb/sdk-go/keystone"
+	"github.com/keystonedb/sdk-go/proto"
 	"github.com/mressex/go-todo/models"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

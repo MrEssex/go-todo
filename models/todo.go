@@ -1,6 +1,6 @@
 package models
 
-import "github.com/kubex/keystone-go/keystone"
+import "github.com/keystonedb/sdk-go/keystone"
 
 type Todo struct {
 	keystone.BaseEntity

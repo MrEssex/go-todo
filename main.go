@@ -16,5 +16,5 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Group(routes.TodoRouter)
 
-	http.ListenAndServe(":3030", r)
+	http.ListenAndServe(":3040", r)
 }

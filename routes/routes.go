@@ -48,6 +48,8 @@ func TodoRouter(r chi.Router) {
 			return
 		}
 
+		log.Println("Marking todo complete or incomplete current: ", todo.Completed)
+
 		if todo.Completed {
 			err = controllers.MarkTodoIncomplete(id)
 		} else {
